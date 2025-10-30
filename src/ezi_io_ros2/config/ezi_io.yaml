@@ -1,0 +1,24 @@
+ezi_io:
+  ros__parameters:
+    ip_address: "192.168.0.3"  # 실제 EZI-IO IP 주소
+    port: 502
+    slave_id: 1
+    update_rate: 20.0
+    input_start_address: 0
+    input_count: 16
+
+    # 상부체 스테이지 리미트 센서 매핑 (실제 배선 기준)
+    # X축: 원점(IN02), 최대(IN03)
+    limit_x_min_channel: 2  # IN02: X축 원점 리미트
+    limit_x_max_channel: 3  # IN03: X축 최대 리미트
+
+    # Y축: 원점(IN01), 최대(IN00)
+    limit_y_min_channel: 1  # IN01: Y축 원점 리미트
+    limit_y_max_channel: 0  # IN00: Y축 최대 리미트
+
+    # Z축: 원점(IN05), 최대(IN06)
+    limit_z_min_channel: 5  # IN05: Z축 원점 리미트
+    limit_z_max_channel: 6  # IN06: Z축 최대 리미트
+
+    # Yaw축: 원점(IN04) - 추가 센서
+    limit_yaw_min_channel: 4  # IN04: Yaw축 원점 리미트
