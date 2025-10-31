@@ -1,0 +1,38 @@
+# ROS2 빌드 결과물
+build/
+install/
+log/
+
+# 백업 및 압축 파일
+*.bak
+*.swp
+*~
+*.zip
+*.tar.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# 로그 파일
+*.log
+
+# 임시 파일
+non_use/
+rmd_can_protocol/
+
+# 문서 파일
+*.pdf
+
+# 외부 소스
+src/rebar_motor_control-main/
+src/zed-ros2-wrapper/
+src/smc_linux/

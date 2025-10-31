@@ -490,8 +490,8 @@ class IronMDTeleopNode(Node):
         if (abs(linear - self.last_cmd_sent['linear']) > 0.01 or
             abs(angular - self.last_cmd_sent['angular']) > 0.01):
             twist = Twist()
-            # AN4(전후진): 기존 회전 속도 적용 (절반 속도)
-            twist.linear.x = linear * self.max_linear * 0.5
+            # AN4(전후진): 전체 속도 (0.5 -> 1.0으로 2배 증가)
+            twist.linear.x = linear * self.max_linear * 1.0
             # AN3(좌우회전): 기존 전후진 속도 적용 (전체 속도)
             twist.angular.z = angular * self.max_linear
             
@@ -691,15 +691,15 @@ class IronMDTeleopNode(Node):
             self.s21_sequence_timer.cancel()
             self.s21_sequence_timer = None
 
-        # 2단계: Z축 음의 방향 1.5회전 (540도) 하강
+        # 2단계: Z축 음의 방향 약 3.06회전 (1100도) 하강
         self.z_moving_down = True
         self.z_moving_to_limit = False
-        self.current_positions['z'] -= 540.0  # degree
+        self.current_positions['z'] -= 1100.0  # degree
         self.publish_joint_position('z', self.joint4_pub)  # joint_4 = 0x146
-        self.get_logger().info(f'[S21 Sequence] 2단계: Z축 -1.5회전(540°) 하강 (0x146, 누적: {self.current_positions["z"]:.1f}도)')
+        self.get_logger().info(f'[S21 Sequence] 2단계: Z축 -약 3.06회전(1100°) 하강 (0x146, 누적: {self.current_positions["z"]:.1f}도)')
 
-        # 3.5초 후 그리퍼 닫기 (하강 완료 대기: 1.5배 빠른 속도 고려)
-        self.s21_sequence_timer = self.create_timer(3.5, self.s21_sequence_gripper_close)
+        # 6.0초 후 그리퍼 닫기 (하강 완료 대기: 1100도 하강 시간 고려, 100dps 속도 기준 약 11초)
+        self.s21_sequence_timer = self.create_timer(6.0, self.s21_sequence_gripper_close)
 
     def s21_sequence_gripper_close(self):
         """S21 시퀀스 3단계: 그리퍼 완전히 닫기"""
@@ -819,23 +819,23 @@ class IronMDTeleopNode(Node):
 
     def motor_position_callback(self, msg: Float32, motor_type: str):
         """모터 위치 콜백 (0x143: lateral, 0x146: z, 0x147: yaw)"""
-        # 항상 현재 위치 업데이트
+        # 초기 위치만 읽고, 이후에는 피드백으로 위치를 덮어쓰지 않음 (누적 오류 방지)
         if motor_type == 'lateral':
-            self.current_positions['lateral'] = msg.data
-            # 초기 위치 읽기 완료 로그 (한 번만)
+            # 초기 위치 읽기 (브레이크 해제 직후 한 번만)
             if not self.initial_position_read[motor_type] and self.brake_released:
+                self.current_positions['lateral'] = msg.data
                 self.get_logger().info(f'✅ 0x143 (lateral) 초기 위치 읽기 완료: {msg.data:.1f}°')
                 self.initial_position_read[motor_type] = True
         elif motor_type == 'z':
-            self.current_positions['z'] = msg.data
-            # 초기 위치 읽기 완료 로그 (한 번만)
+            # 초기 위치 읽기 (브레이크 해제 직후 한 번만)
             if not self.initial_position_read[motor_type] and self.brake_released:
+                self.current_positions['z'] = msg.data
                 self.get_logger().info(f'✅ 0x146 (z) 초기 위치 읽기 완료: {msg.data:.1f}°')
                 self.initial_position_read[motor_type] = True
         elif motor_type == 'yaw':
-            self.current_positions['yaw'] = msg.data
-            # 초기 위치 읽기 완료 로그 (한 번만)
+            # 초기 위치 읽기 (브레이크 해제 직후 한 번만)
             if not self.initial_position_read[motor_type] and self.brake_released:
+                self.current_positions['yaw'] = msg.data
                 self.get_logger().info(f'✅ 0x147 (yaw) 초기 위치 읽기 완료: {msg.data:.1f}°')
                 self.initial_position_read[motor_type] = True
     
@@ -855,6 +855,9 @@ class IronMDTeleopNode(Node):
             self.z_moving_to_limit = False
             # 0x146 모터에 긴급 정지 명령 전송 (CAN2를 통해)
             self.send_motor_emergency_stop(0x146)
+            # Z축 위치를 원점(0도)으로 리셋
+            self.current_positions['z'] = 0.0
+            self.get_logger().info('🏠 Z축 위치 원점(0°)으로 리셋')
     
     def limit_sensor_in06_callback(self, msg: Bool):
         """EZI-IO IN06 리미트 센서 콜백 (Z축 하단 리미트)"""

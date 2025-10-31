@@ -707,3 +707,16 @@ CAN2 전송 → RMD 모터 (0x141-0x147)
 - `MOTOR_CONTROL_GUIDE.md` - Pololu/Seengrip 개별 제어
 - `CAN_REMOTE_CONTROL_적용완료.md` - CAN 리모콘 설정
 - `MOTOR_CONTROL_GUIDE.md` - 모터 제어 가이드
+
+
+## 자동 실행 서비스 중지
+  sudo systemctl stop ros2-autostart.service
+
+## 서비스 비활성화 (부팅 시 자동 실행 안함)
+  sudo systemctl disable ros2-autostart.service
+
+  이렇게 하면 스크립트가 자동으로 재시작되지 않습니다.
+
+## 자동 실행 서비스 다시 활성화하려면:
+  sudo systemctl enable ros2-autostart.service
+  sudo systemctl start ros2-autostart.service

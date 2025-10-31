@@ -533,7 +533,7 @@ class PositionControlNode(Node):
         if motor_id == 0x147:  # Yaw 회전 모터
             max_speed_dps = 67  # Yaw 회전 속도 67 dps (0x143의 1/3)
         elif motor_id == 0x146:  # Z축 모터
-            max_speed_dps = 75  # Z축 속도 75 dps (50 dps의 1.5배)
+            max_speed_dps = 100  # Z축 속도 100 dps
         else:
             max_speed_dps = 200  # 기본 속도 200 dps (0x143 포함, 부하 감소, 소음 방지)
 
