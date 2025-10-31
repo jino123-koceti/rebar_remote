@@ -362,6 +362,42 @@ sudo chmod 666 /dev/ttyUSB0
 
 ---
 
-**Last Updated**: 2025-10-30  
+## 🆕 최신 업데이트 (2025-10-31)
+
+### 주요 개선사항
+
+#### Iron-MD 조종기 통합 ✅
+- CAN3 (250kbps) 통신으로 무선 리모콘 직접 제어
+- 4개 조이스틱 + 24개 버튼 완벽 매핑
+- [`iron_md_teleop_node.py`](src/rebar_control/rebar_control/iron_md_teleop_node.py) (1,255줄)
+
+#### 자동화 시퀀스
+- **S14**: 드라이브 모터 자동 홈잉 (IN02 센서 기반 탐색)
+- **S21**: 하강 → 그리퍼 닫기 (작업 준비)
+- **S22**: 트리거 → 그리퍼 열기 → 상승 (작업 완료)
+
+#### 헤드리스 운영 개선
+- 부팅 시 자동 실행 스크립트 (`integrated_control_debug.sh`)
+- 로그 자동 관리 (타임스탬프 + 압축)
+- 실시간 로그 모니터링 도구 (`view_logs.sh`)
+- 자동 로그 정리 (`cleanup_logs.sh`)
+
+#### 리미트 센서 통합
+- EZI-IO 6축 센서 실시간 모니터링
+- IN02: 드라이브 홈 위치 감지
+- 자동 홈잉 시퀀스 통합
+
+#### 브레이크 제어 개선
+- S13 버튼 토글 방식 (누를 때마다 해제/잠금 전환)
+- 시각적 피드백 (로그 출력)
+
+#### 코드 품질 개선
+- 리팩토링 가이드라인 문서화 ([`REFACTORING_PLAN.md`](REFACTORING_PLAN.md))
+- .gitignore 추가 (빌드 결과물 제외)
+- 아키텍처 문서 업데이트 ([`ROBOT_CONTROL_ARCHITECTURE.md`](ROBOT_CONTROL_ARCHITECTURE.md))
+
+---
+
+**Last Updated**: 2025-10-31  
 **ROS2 Version**: Humble  
 **Ubuntu Version**: 22.04 LTS
